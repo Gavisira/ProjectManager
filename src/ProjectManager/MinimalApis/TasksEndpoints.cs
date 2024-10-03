@@ -17,28 +17,24 @@ public static class TasksEndpoints
 
     public static WebApplication SetupTasksEndpoints(this WebApplication app)
     {
-        //map add coment to task endpoint
         app.MapPost("/tasks/{taskId}/comments", async ([FromServices] IMediator mediator, AddCommentToTaskCommand command) =>
         {
             var response = await mediator.Send(command);
             return Results.Ok(response);
         }).WithOpenApi().WithTags("Task Comments");
 
-        //map createTask endpoint
         app.MapPost("/tasks", async ([FromServices] IMediator mediator, CreateTaskCommand command) =>
         {
             var response = await mediator.Send(command);
             return Results.Ok(response);
         }).WithOpenApi().WithTags("Tasks");
 
-        //map delete task endpoint
         app.MapDelete("/tasks/{taskId}", async ([FromServices] IMediator mediator, int taskId) =>
         {
             var response = await mediator.Send(new DeleteTaskCommand { TaskId = taskId });
             return Results.Ok(response);
         }).WithOpenApi().WithTags("Tasks");
 
-        //map update task endpoint
         app.MapPut("/tasks/{taskId}", async ([FromServices] IMediator mediator, int taskId, UpdateProjectCommand command) =>
         {
             command.ProjectId = taskId;

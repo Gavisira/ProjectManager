@@ -1,5 +1,7 @@
 using ProjectManager.Infrastructure.SQLServer.DependencyInjection;
 using ProjectManager.MinimalApis;
+using System.Reflection;
+using ProjectManager.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,12 +11,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
-builder.Services.AddSqlServerProjectManagerSetup(connectionString);
+
+builder.Services
+    .AddSqlServerProjectManagerSetup(connectionString)
+    .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ProjectManager.Application.BaseResponse<>).Assembly));
 
 var app = builder.Build();
 
 app.SetupProjectsEndpoints();
 app.SetupTasksEndpoints();
+app.SetupUserEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

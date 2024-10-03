@@ -9,24 +9,26 @@ public class BaseResponse<T>(List<string> errors = null, T data = default, bool 
     public T Data { get; set; } = data;
     public bool IsSuccess { get; set; } = isSuccess;
 
-    public T Success(T data)
+    public BaseResponse<T> Success(T data)
     {
         IsSuccess = true;
         Data = data;
-        return data;
+        return this;
     }
 
-    public void Fail(List<string> errors)
+    public BaseResponse<T> Fail(List<string> errors)
     {
         Errors ??= [];
         IsSuccess = false;
         Errors = errors;
+        return this;
     }
 
-    public void AddError(string error)
+    public BaseResponse<T> AddError(string error)
     {
         IsSuccess = false;
         Errors ??= [];
         Errors.Add(error);
+        return this;
     }
 }

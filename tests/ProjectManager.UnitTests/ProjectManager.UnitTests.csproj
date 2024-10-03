@@ -29,4 +29,8 @@
     <ProjectReference Include="..\..\src\ProjectManager.Infrastructure.SQLServer\ProjectManager.Infrastructure.SQLServer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Project\Queries\" />
+  </ItemGroup>
+
 </Project>

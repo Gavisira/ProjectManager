@@ -16,6 +16,34 @@ public class ProjectRepository(ProjectManagerDbContext context) : BaseRepository
     {
         return await _context.Projects.Where(p => p.IsDeleted == false).AsNoTracking().Include(x => x.Tasks).Where(p => p.IsDeleted == false).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
     }
+
+    public async Task<IEnumerable<Project>> GetAllProjectsFromUserAsync(int userId)
+    {
+        return await _context.Projects.Where(p => p.IsDeleted == false).Include(x => x.Users).Where(p => p.IsDeleted == false).Where(x => x.Users.Any(u => (u.Id == userId && u.IsDeleted == false))).ToListAsync();
+    }
+
+    public async Task<bool> AddUserToProject(int userId, int projectId)
+    {
+        var project = await _context.Projects.Where(p => p.IsDeleted == false).Include(x => x.Users).Where(p => p.IsDeleted == false).FirstOrDefaultAsync(x => x.Id == projectId);
+        if (project == null)
+        {
+            return false;
+        }
+        var user = await _context.Users.Where(p => p.IsDeleted == false).FirstOrDefaultAsync(x => x.Id == userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        var projectUsers = project.Users.ToList();
+        projectUsers.Add(user);
+        project.Users = projectUsers;
+
+        _context.Entry(project).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
     public new async Task<bool> DeleteAsync(int id)
     {
         var tasks = await _context.Set<ProjectTask>().Where(p => p.IsDeleted == false).Where(x => x.Project.Id == id).ToListAsync();
@@ -23,7 +51,7 @@ public class ProjectRepository(ProjectManagerDbContext context) : BaseRepository
         {
             try
             {
-                var entity = await _context.Projects.Where(p => p.IsDeleted == false).FirstOrDefaultAsync(p=>p.Id==id);
+                var entity = await _context.Projects.Where(p => p.IsDeleted == false).FirstOrDefaultAsync(p => p.Id == id);
                 if (entity == null)
                 {
                     return false;
