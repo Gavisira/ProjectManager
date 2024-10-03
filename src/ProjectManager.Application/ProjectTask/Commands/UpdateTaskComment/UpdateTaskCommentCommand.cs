@@ -11,5 +11,7 @@ namespace ProjectManager.Application.ProjectTask.Commands.UpdateTaskComment
     {
         public int TaskCommentId { get; set; }
         public string Comment { get; set; }
+        public int AssignedUserId { get; set; }
+
     }
 }

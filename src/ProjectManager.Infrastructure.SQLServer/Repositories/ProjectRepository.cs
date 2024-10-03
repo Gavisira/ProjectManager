@@ -7,6 +7,10 @@ namespace ProjectManager.Infrastructure.SQLServer.Repositories;
 
 public class ProjectRepository(ProjectManagerDbContext context) : BaseRepository<Project>(context), IProjectRepository
 {
+    public new async Task<Project?> GetByIdAsync(int id)
+    {
+        return await _context.Projects.Include(x => x.Tasks).FirstOrDefaultAsync(x => x.Id == id);
+    }
     public new async Task<bool> DeleteAsync(int id)
     {
         var tasks = await _context.Set<ProjectTask>().Where(x => x.Project.Id == id).ToListAsync();

@@ -8,6 +8,7 @@ namespace ProjectManager.Application.ProjectTask.Commands.AddCommentToTask
     {
         public int TaskId { get; set; }
         public string Comment { get; set; }
-        public int UserId { get; set; }
+        public int AssignedUserId { get; set; }
+
     }
 }

@@ -15,5 +15,7 @@ namespace ProjectManager.Application.ProjectTask.Commands.CreateTask
         public string Description { get; set; }
         public DateTime TargetDate { get; set; }
         public EProjectTaskPriority Priority { get; set; }
+        public int AssignedUserId { get; set; }
+
     }
 }

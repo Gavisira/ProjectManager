@@ -11,6 +11,7 @@ namespace ProjectManager.Application.Project.CreateProject
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public DateTime TargetDate { get; set; }
+        public DateTime? TargetDate { get; set; }
+
     }
 }
