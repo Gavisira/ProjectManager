@@ -59,7 +59,9 @@ public class BaseRepository<T>(ProjectManagerDbContext context) : IBaseRepositor
                 return false;
             }
 
-            _context.Set<T>().Remove(entity);
+            entity.IsDeleted = true;
+
+            _context.Entry(entity).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return true;
         }

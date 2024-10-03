@@ -15,6 +15,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasKey(u => u.Id);
 
         // Propriedades
+
+        builder.Property(p => p.IsDeleted)
+            .HasDefaultValue(false);
+
         builder.Property(u => u.Name)
         .IsRequired()
             .HasMaxLength(100);

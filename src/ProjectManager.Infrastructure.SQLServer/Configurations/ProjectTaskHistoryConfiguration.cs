@@ -12,6 +12,9 @@ public class ProjectTaskHistoryConfiguration : IEntityTypeConfiguration<ProjectT
         builder.HasKey(h => h.Id);
 
         // Propriedades
+
+        builder.Property(p => p.IsDeleted)
+            .HasDefaultValue(false);
         builder.Property(h => h.HistoryDescription)
             .IsRequired()
             .HasMaxLength(500);

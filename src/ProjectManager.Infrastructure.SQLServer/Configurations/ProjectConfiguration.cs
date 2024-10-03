@@ -12,6 +12,9 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasKey(p => p.Id);
 
         // Propriedades
+
+        builder.Property(p=>p.IsDeleted)
+            .HasDefaultValue(false);
         builder.Property(p => p.Name)
             .IsRequired()
             .HasMaxLength(100);

@@ -13,6 +13,10 @@ public class TaskConfiguration : IEntityTypeConfiguration<ProjectTask>
         builder.HasKey(t => t.Id);
 
         // Propriedades
+
+        builder.Property(p => p.IsDeleted)
+            .HasDefaultValue(false);
+
         builder.Property(t => t.Priority)
             .IsRequired()
             .HasConversion<string>(); // Armazenar enum como string

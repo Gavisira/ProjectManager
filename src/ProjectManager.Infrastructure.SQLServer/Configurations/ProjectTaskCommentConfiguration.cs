@@ -11,6 +11,9 @@ public class ProjectTaskCommentConfiguration : IEntityTypeConfiguration<ProjectT
         builder.HasKey(c => c.Id);
 
         // Propriedades
+
+        builder.Property(p => p.IsDeleted)
+            .HasDefaultValue(false);
         builder.Property(c => c.Comment)
             .IsRequired()
             .HasMaxLength(500);
