@@ -1,4 +1,5 @@
 using ProjectManager.Infrastructure.SQLServer.DependencyInjection;
+using ProjectManager.MinimalApis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ var connectionString = builder.Configuration.GetConnectionString("SqlServerConne
 builder.Services.AddSqlServerProjectManagerSetup(connectionString);
 
 var app = builder.Build();
+
+app.SetupProjectsEndpoints();
+app.SetupTasksEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

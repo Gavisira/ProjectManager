@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using ProjectManager.Application.Project.CreateProject;
 using ProjectManager.Application.Project.DeleteProject;
 using ProjectManager.Application.Project.Queries.GetAllProjectsFromUser;
@@ -10,32 +11,32 @@ public static class ProjectsEndpoints
 {
     public static WebApplication SetupProjectsEndpoints(this WebApplication app)
     {
-        app.MapGet("/projects/{userId}", async (IMediator mediator, int userId) =>
+        app.MapGet("/projects/{userId}", async ([FromServices] IMediator mediator, int userId) =>
         {
             var response = await mediator.Send(new GetAllProjectsFromUserQuery { UserId = userId });
             return Results.Ok(response);
-        }).WithOpenApi();
+        }).WithOpenApi().WithTags("Projects");
 
 
         //map create project endpoint
-        app.MapPost("/projects", async (IMediator mediator, CreateProjectCommand command) =>
+        app.MapPost("/projects", async ([FromServices] IMediator mediator, CreateProjectCommand command) =>
         {
             var response = await mediator.Send(command);
             return Results.Ok(response);
-        }).WithOpenApi();
+        }).WithOpenApi().WithTags("Projects");
 
-        app.MapDelete("/projects/{projectId}", async (IMediator mediator, int projectId) =>
+        app.MapDelete("/projects/{projectId}", async ([FromServices] IMediator mediator, int projectId) =>
         {
             var response = await mediator.Send(new DeleteProjectCommand { ProjectId = projectId });
             return Results.Ok(response);
-        }).WithOpenApi();
+        }).WithOpenApi().WithTags("Projects");
 
-        app.MapPut("/projects/{projectId}", async (IMediator mediator, int projectId, UpdateProjectCommand command) =>
+        app.MapPut("/projects/{projectId}", async ([FromServices] IMediator mediator, int projectId, UpdateProjectCommand command) =>
         {
             command.ProjectId = projectId;
             var response = await mediator.Send(command);
             return Results.Ok(response);
-        }).WithOpenApi();
+        }).WithOpenApi().WithTags("Projects");
 
 
         return app;
