@@ -20,9 +20,9 @@ public class TaskRepository(ProjectManagerDbContext context) : BaseRepository<Pr
     {
         try
         {
-            var userProjects = _context.Users.Include(x => x.Projects).FirstOrDefault(x => x.Id == userId);
-            var projects = await _context.Projects.Include(p => p.Tasks).Where(p => userProjects.Projects.Contains(p))
-                .Select(p => p.Tasks).ToListAsync();
+            var userProjects = _context.Users.Where(p => p.IsDeleted == false).Include(x => x.Projects).Where(p => p.IsDeleted == false).FirstOrDefault(x => x.Id == userId);
+            var projects = await _context.Projects.Where(p => p.IsDeleted == false).Include(p => p.Tasks).Where(p => p.IsDeleted == false).Where(p => userProjects.Projects.Contains(p))
+                .Select(p => p.Tasks.Where(p => p.IsDeleted == false)).ToListAsync();
             return projects.SelectMany(x => x);
         }
         catch (Exception ex)

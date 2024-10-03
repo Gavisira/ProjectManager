@@ -13,12 +13,12 @@ public class BaseRepository<T>(ProjectManagerDbContext context) : IBaseRepositor
 
     public async Task<IEnumerable<T?>> GetAllAsync()
     {
-        return _context.Set<T>().AsEnumerable();
+        return _context.Set<T>().Where(p => p.IsDeleted == false).AsEnumerable();
     }
 
     public async Task<T?> GetByIdAsync(int id)
     {
-        return await _context.Set<T>().FindAsync(id);
+        return await _context.Set<T>().Where(p=>p.IsDeleted==false).FirstOrDefaultAsync(p=>p.Id==id);
     }
 
     public async Task<T> AddAsync(T entity)
@@ -71,10 +71,10 @@ public class BaseRepository<T>(ProjectManagerDbContext context) : IBaseRepositor
         }
     }
 
-    public async Task<T?> GetByIdAsNoTrackingAsync(int id) => await _context.Set<T>().AsNoTracking().FirstOrDefaultAsync(p => p.Id == id)??new T();
+    public async Task<T?> GetByIdAsNoTrackingAsync(int id) => await _context.Set<T>().Where(p => p.IsDeleted == false).AsNoTracking().FirstOrDefaultAsync(p => p.Id == id)??new T();
 
     public async Task<IEnumerable<T>> GetAllAsNoTrackingAsync()
     {
-        return await _context.Set<T>().AsNoTracking().ToListAsync();
+        return await _context.Set<T>().Where(p => p.IsDeleted == false).AsNoTracking().ToListAsync();
     }
 }

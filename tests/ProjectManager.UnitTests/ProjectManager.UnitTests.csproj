@@ -15,11 +15,18 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="xunit.assert" Version="2.9.2" />
     <PackageReference Include="xunit.extensibility.core" Version="2.9.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ProjectManager.Application\ProjectManager.Application.csproj" />
+    <ProjectReference Include="..\..\src\ProjectManager.Infrastructure.SQLServer\ProjectManager.Infrastructure.SQLServer.csproj" />
   </ItemGroup>
 
 </Project>
