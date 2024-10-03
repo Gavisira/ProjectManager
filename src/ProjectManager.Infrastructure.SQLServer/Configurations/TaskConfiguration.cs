@@ -19,7 +19,11 @@ public class TaskConfiguration : IEntityTypeConfiguration<ProjectTask>
 
         builder.Property(t => t.Status)
             .IsRequired()
-            .HasConversion<string>(); // Armazenar enum como string
+            .HasConversion<string>();
+
+        builder.Property(t => t.Title)
+                    .IsRequired()
+                    .HasMaxLength(100);
 
         builder.Property(t => t.Description)
             .IsRequired()
@@ -33,21 +37,24 @@ public class TaskConfiguration : IEntityTypeConfiguration<ProjectTask>
 
         builder.Property(t => t.EndDate);
 
-        // Conversão da lista de Comments para string JSON
-        builder.Property(t => t.Comments)
-            .HasConversion(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
-                v => JsonSerializer.Deserialize<IEnumerable<string>>(v, (JsonSerializerOptions)null))
-            .HasColumnType("nvarchar(max)");
+        // Relacionamentos
 
         // Relacionamento um-para-muitos com ProjectTaskHistory
         builder.HasMany(t => t.TaskHistories)
-            .WithOne()
-            .HasForeignKey("ProjectTaskId");
+            .WithOne(h => h.ProjectTask)
+            .HasForeignKey(h => h.ProjectTaskId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Relacionamento um-para-muitos com ProjectTaskComment
+        builder.HasMany(t => t.Comments)
+            .WithOne(c => c.ProjectTask)
+            .HasForeignKey(c => c.ProjectTaskId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Relacionamento muitos-para-um com Project
         builder.HasOne(t => t.Project)
             .WithMany(p => p.Tasks)
-            .HasForeignKey("ProjectId");
+            .HasForeignKey(t => t.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

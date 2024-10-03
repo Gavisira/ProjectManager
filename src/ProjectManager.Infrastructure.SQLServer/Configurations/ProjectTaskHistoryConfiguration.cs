@@ -19,17 +19,18 @@ public class ProjectTaskHistoryConfiguration : IEntityTypeConfiguration<ProjectT
         builder.Property(h => h.ChangeDate)
             .IsRequired();
 
+        // Relacionamentos
+
         // Relacionamento muitos-para-um com User
         builder.HasOne(h => h.User)
             .WithMany()
-            .HasForeignKey("UserId");
-
-        // Propriedade de sombra para ProjectTaskId
-        builder.Property<int>("ProjectTaskId");
+            .HasForeignKey(h => h.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Relacionamento muitos-para-um com ProjectTask
-        builder.HasOne<ProjectTask>()
+        builder.HasOne(h => h.ProjectTask)
             .WithMany(t => t.TaskHistories)
-            .HasForeignKey("ProjectTaskId");
+            .HasForeignKey(h => h.ProjectTaskId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

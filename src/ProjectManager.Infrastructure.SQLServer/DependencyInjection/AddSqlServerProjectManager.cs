@@ -14,9 +14,11 @@ public static class AddSqlServerProjectManager
         {
             options.UseSqlServer(connectionString);
         });
+        services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITaskRepository, TaskRepository>();
+        services.AddScoped<ICommentTaskRepository, CommentTaskRepository>();
         return services;
     }
 }

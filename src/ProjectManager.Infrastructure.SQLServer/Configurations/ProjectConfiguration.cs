@@ -16,9 +16,17 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(p => p.Description)
+            .IsRequired()
+            .HasMaxLength(500);
+
+        builder.Property(p=>p.TargetDate)
+            .IsRequired();
+
         // Relacionamento um-para-muitos com ProjectTask
         builder.HasMany(p => p.Tasks)
             .WithOne(t => t.Project)
-            .HasForeignKey("ProjectId");
+            .HasForeignKey(t => t.ProjectId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

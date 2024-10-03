@@ -10,6 +10,8 @@ public class ProjectManagerDbContext(DbContextOptions<ProjectManagerDbContext> o
     public DbSet<User> Users { get; set; }
     public DbSet<Project> Projects { get; set; }
     public DbSet<ProjectTask> ProjectTasks { get; set; }
+    public DbSet<ProjectTaskComment> ProjectTaskComments { get; set; }
+    public DbSet<ProjectTaskHistory> ProjectTaskHistories { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

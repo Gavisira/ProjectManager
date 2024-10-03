@@ -2,6 +2,7 @@
 
 public enum EProjectTaskStatus
 {
+    Created,
     Planned,
     NotStarted,
     InProgress,
