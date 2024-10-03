@@ -2,7 +2,7 @@
 
 namespace ProjectManager.Domain.Entities;
 
-public class ProjectTask
+public class ProjectTask:BaseEntity
 {
     public EProjectTaskPriority Priority { get; set; }
     public EProjectTaskStatus Status { get; set; }
