@@ -13,7 +13,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         // Propriedades
 
-        builder.Property(p=>p.IsDeleted)
+        builder.Property(p => p.IsDeleted)
             .HasDefaultValue(false);
         builder.Property(p => p.Name)
             .IsRequired()
@@ -23,7 +23,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .IsRequired()
             .HasMaxLength(500);
 
-        builder.Property(p=>p.TargetDate)
+        builder.Property(p => p.TargetDate)
             .IsRequired();
 
         // Relacionamento um-para-muitos com ProjectTask

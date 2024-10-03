@@ -1,54 +1,64 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using ProjectManager.Application.ProjectTask.Commands.CreateTask;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
-namespace ProjectManager.UnitTests.ProjectTask.Commands.CreateTask
+namespace ProjectManager.UnitTests.ProjectTask.Commands.CreateTask;
+
+[TestClass]
+public class CreateTaskCommandHandlerTests
 {
-    public class CreateTaskCommandHandlerTests
+    private readonly Mock<ILogger<CreateTaskCommandHandler>> mockLogger;
+    private readonly MockRepository mockRepository;
+    private readonly Mock<ITaskHistoryRepository> mockTaskHistoryRepository;
+
+    private readonly Mock<ITaskRepository> mockTaskRepository;
+
+    public CreateTaskCommandHandlerTests()
     {
-        private MockRepository mockRepository;
+        mockRepository = new MockRepository(MockBehavior.Default);
 
-        private Mock<ITaskRepository> mockTaskRepository;
-        private Mock<ILogger<CreateTaskCommandHandler>> mockLogger;
-        private Mock<ITaskHistoryRepository> mockTaskHistoryRepository;
+        mockTaskRepository = mockRepository.Create<ITaskRepository>();
+        mockLogger = mockRepository.Create<ILogger<CreateTaskCommandHandler>>();
+        mockTaskHistoryRepository = mockRepository.Create<ITaskHistoryRepository>();
+    }
 
-        public CreateTaskCommandHandlerTests()
-        {
-            this.mockRepository = new MockRepository(MockBehavior.Strict);
+    private CreateTaskCommandHandler CreateCreateTaskCommandHandler()
+    {
+        return new CreateTaskCommandHandler(
+            mockTaskRepository.Object,
+            mockLogger.Object,
+            mockTaskHistoryRepository.Object);
+    }
 
-            this.mockTaskRepository = this.mockRepository.Create<ITaskRepository>();
-            this.mockLogger = this.mockRepository.Create<ILogger<CreateTaskCommandHandler>>();
-            this.mockTaskHistoryRepository = this.mockRepository.Create<ITaskHistoryRepository>();
-        }
+    [Fact]
+    public async Task Test_Success_Scenario()
+    {
+        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
 
-        private CreateTaskCommandHandler CreateCreateTaskCommandHandler()
-        {
-            return new CreateTaskCommandHandler(
-                this.mockTaskRepository.Object,
-                this.mockLogger.Object,
-                this.mockTaskHistoryRepository.Object);
-        }
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        var createTaskCommandHandler = CreateCreateTaskCommandHandler();
+        var request = projectManagerFixture.Create<CreateTaskCommand>();
+        CancellationToken cancellationToken = default;
 
-        [Fact]
-        public async Task Handle_StateUnderTest_ExpectedBehavior()
-        {
-            // Arrange
-            var createTaskCommandHandler = this.CreateCreateTaskCommandHandler();
-            CreateTaskCommand request = null;
-            CancellationToken cancellationToken = default(global::System.Threading.CancellationToken);
+        //setup mocks
+        mockTaskRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTask>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTask>());
+        mockTaskHistoryRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTaskHistory>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskHistory>());
 
-            // Act
-            var result = await createTaskCommandHandler.Handle(
-                request,
-                cancellationToken);
+        // Act
+        var result = await createTaskCommandHandler.Handle(
+            request,
+            cancellationToken);
 
-            // Assert
-            Assert.True(false);
-            this.mockRepository.VerifyAll();
-        }
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Errors.Should().BeNullOrEmpty();
     }
 }

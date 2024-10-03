@@ -1,16 +1,9 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ProjectManager.Application.ProjectTask.Commands.DeleteTaskComment
+namespace ProjectManager.Application.ProjectTask.Commands.DeleteTaskComment;
+
+public class DeleteTaskCommentCommand : IRequest<BaseResponse<bool>>
 {
-    public class DeleteTaskCommentCommand : IRequest<BaseResponse<bool>>
-    {
-        public int TaskCommentId { get; set; }
-        public int AssignedUserId { get; set; }
-
-    }
+    public int TaskCommentId { get; set; }
+    public int AssignedUserId { get; set; }
 }

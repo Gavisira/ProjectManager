@@ -1,51 +1,59 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using ProjectManager.Application.ProjectTaskHistory.Queries.GetAllTaskHistoryById;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
-namespace ProjectManager.UnitTests.ProjectTaskHistory.Queries.GetAllTaskHistoryById
+namespace ProjectManager.UnitTests.ProjectTaskHistory.Queries.GetAllTaskHistoryById;
+
+[TestClass]
+public class GetAllTaskHistoryByIdQueryHandlerTests
 {
-    public class GetAllTaskHistoryByIdQueryHandlerTests
+    private readonly Mock<ILogger<GetAllTaskHistoryByIdQueryHandler>> mockLogger;
+    private readonly MockRepository mockRepository;
+
+    private readonly Mock<ITaskHistoryRepository> mockTaskHistoryRepository;
+
+    public GetAllTaskHistoryByIdQueryHandlerTests()
     {
-        private MockRepository mockRepository;
+        mockRepository = new MockRepository(MockBehavior.Default);
 
-        private Mock<ITaskHistoryRepository> mockTaskHistoryRepository;
-        private Mock<ILogger<GetAllTaskHistoryByIdQueryHandler>> mockLogger;
+        mockTaskHistoryRepository = mockRepository.Create<ITaskHistoryRepository>();
+        mockLogger = mockRepository.Create<ILogger<GetAllTaskHistoryByIdQueryHandler>>();
+    }
 
-        public GetAllTaskHistoryByIdQueryHandlerTests()
-        {
-            this.mockRepository = new MockRepository(MockBehavior.Strict);
+    private GetAllTaskHistoryByIdQueryHandler CreateGetAllTaskHistoryByIdQueryHandler()
+    {
+        return new GetAllTaskHistoryByIdQueryHandler(
+            mockTaskHistoryRepository.Object,
+            mockLogger.Object);
+    }
 
-            this.mockTaskHistoryRepository = this.mockRepository.Create<ITaskHistoryRepository>();
-            this.mockLogger = this.mockRepository.Create<ILogger<GetAllTaskHistoryByIdQueryHandler>>();
-        }
+    [Fact]
+    public async Task Test_Success_Scenario()
+    {
+        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
 
-        private GetAllTaskHistoryByIdQueryHandler CreateGetAllTaskHistoryByIdQueryHandler()
-        {
-            return new GetAllTaskHistoryByIdQueryHandler(
-                this.mockTaskHistoryRepository.Object,
-                this.mockLogger.Object);
-        }
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        var getAllTaskHistoryByIdQueryHandler = CreateGetAllTaskHistoryByIdQueryHandler();
+        var request = projectManagerFixture.Create<GetAllTaskHistoryByIdQuery>();
+        CancellationToken cancellationToken = default;
 
-        [Fact]
-        public async Task Handle_StateUnderTest_ExpectedBehavior()
-        {
-            // Arrange
-            var getAllTaskHistoryByIdQueryHandler = this.CreateGetAllTaskHistoryByIdQueryHandler();
-            GetAllTaskHistoryByIdQuery request = null;
-            CancellationToken cancellationToken = default(global::System.Threading.CancellationToken);
+        //setup mocks
+        mockTaskHistoryRepository.Setup(x => x.GetAllTaskHistoryByTaskId(It.IsAny<int>()))
+            .ReturnsAsync(projectManagerFixture.CreateMany<Domain.Entities.ProjectTaskHistory>().ToList());
 
-            // Act
-            var result = await getAllTaskHistoryByIdQueryHandler.Handle(
-                request,
-                cancellationToken);
+        // Act
+        var result = await getAllTaskHistoryByIdQueryHandler.Handle(
+            request,
+            cancellationToken);
 
-            // Assert
-            Assert.True(false);
-            this.mockRepository.VerifyAll();
-        }
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Data.TaskHistory.Count().Should().Be(3);
+        result.Errors.Should().BeNullOrEmpty();
     }
 }

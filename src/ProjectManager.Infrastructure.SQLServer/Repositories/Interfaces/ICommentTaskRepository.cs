@@ -2,7 +2,6 @@
 
 namespace ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
 
-public interface ICommentTaskRepository: IBaseRepository<ProjectTaskComment>
+public interface ICommentTaskRepository : IBaseRepository<ProjectTaskComment>
 {
-    
 }

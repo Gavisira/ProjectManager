@@ -1,51 +1,58 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
-using ProjectManager.Application.Project.DeleteProject;
+using ProjectManager.Application.Project.Commands.DeleteProject;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
-namespace ProjectManager.UnitTests.Project.Commands.DeleteProject
+namespace ProjectManager.UnitTests.Project.Commands.DeleteProject;
+
+[TestClass]
+public class DeleteProjectCommandHandlerTests
 {
-    public class DeleteProjectCommandHandlerTests
+    private readonly Mock<ILogger<DeleteProjectCommandHandler>> mockLogger;
+
+    private readonly Mock<IProjectRepository> mockProjectRepository;
+    private readonly MockRepository mockRepository;
+
+    public DeleteProjectCommandHandlerTests()
     {
-        private MockRepository mockRepository;
+        mockRepository = new MockRepository(MockBehavior.Default);
 
-        private Mock<IProjectRepository> mockProjectRepository;
-        private Mock<ILogger<DeleteProjectCommandHandler>> mockLogger;
+        mockProjectRepository = mockRepository.Create<IProjectRepository>();
+        mockLogger = mockRepository.Create<ILogger<DeleteProjectCommandHandler>>();
+    }
 
-        public DeleteProjectCommandHandlerTests()
-        {
-            this.mockRepository = new MockRepository(MockBehavior.Strict);
+    private DeleteProjectCommandHandler CreateDeleteProjectCommandHandler()
+    {
+        return new DeleteProjectCommandHandler(
+            mockProjectRepository.Object,
+            mockLogger.Object);
+    }
 
-            this.mockProjectRepository = this.mockRepository.Create<IProjectRepository>();
-            this.mockLogger = this.mockRepository.Create<ILogger<DeleteProjectCommandHandler>>();
-        }
+    [Fact]
+    public async Task Test_Success_Scenario()
+    {
+        //create tests using ProjectManagerFixture
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        var deleteProjectCommandHandler = CreateDeleteProjectCommandHandler();
+        var request = projectManagerFixture.Create<DeleteProjectCommand>();
+        CancellationToken cancellationToken = default;
 
-        private DeleteProjectCommandHandler CreateDeleteProjectCommandHandler()
-        {
-            return new DeleteProjectCommandHandler(
-                this.mockProjectRepository.Object,
-                this.mockLogger.Object);
-        }
+        //setup mocks
+        mockProjectRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.Project>());
+        mockProjectRepository.Setup(x => x.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
 
-        [Fact]
-        public async Task Handle_StateUnderTest_ExpectedBehavior()
-        {
-            // Arrange
-            var deleteProjectCommandHandler = this.CreateDeleteProjectCommandHandler();
-            DeleteProjectCommand request = null;
-            CancellationToken cancellationToken = default(global::System.Threading.CancellationToken);
+        // Act
+        var result = await deleteProjectCommandHandler.Handle(
+            request,
+            cancellationToken);
 
-            // Act
-            var result = await deleteProjectCommandHandler.Handle(
-                request,
-                cancellationToken);
-
-            // Assert
-            Assert.True(false);
-            this.mockRepository.VerifyAll();
-        }
+        // Assert with fluent assertions
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Errors.Should().BeNullOrEmpty();
     }
 }

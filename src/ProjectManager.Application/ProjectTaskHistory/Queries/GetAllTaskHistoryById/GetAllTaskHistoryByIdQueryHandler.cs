@@ -1,57 +1,49 @@
-﻿using System.Threading;
-using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
 
-namespace ProjectManager.Application.ProjectTaskHistory.Queries.GetAllTaskHistoryById
+namespace ProjectManager.Application.ProjectTaskHistory.Queries.GetAllTaskHistoryById;
+
+public class GetAllTaskHistoryByIdQueryHandler(
+    ITaskHistoryRepository taskHistoryRepository,
+    ILogger<GetAllTaskHistoryByIdQueryHandler> logger)
+    : IRequestHandler<GetAllTaskHistoryByIdQuery,
+        BaseResponse<GetAllTaskHistoryByIdQueryResponse>>
 {
-    public class GetAllTaskHistoryByIdQueryHandler(
-        ITaskHistoryRepository taskHistoryRepository,
-        ILogger<GetAllTaskHistoryByIdQueryHandler> logger)
-        : IRequestHandler<GetAllTaskHistoryByIdQuery,
-            BaseResponse<GetAllTaskHistoryByIdQueryResponse>>
+    public async Task<BaseResponse<GetAllTaskHistoryByIdQueryResponse>> Handle(GetAllTaskHistoryByIdQuery request,
+        CancellationToken cancellationToken)
     {
-        public async Task<BaseResponse<GetAllTaskHistoryByIdQueryResponse>> Handle(GetAllTaskHistoryByIdQuery request,
-            CancellationToken cancellationToken)
+        var response = new BaseResponse<GetAllTaskHistoryByIdQueryResponse>();
+
+        try
         {
-            var response = new BaseResponse<GetAllTaskHistoryByIdQueryResponse>();
-
-            try
+            var taskHistory = await taskHistoryRepository.GetAllTaskHistoryByTaskId(request.TaskId);
+            if (taskHistory == null)
             {
-                var taskHistory = await taskHistoryRepository.GetAllTaskHistoryByTaskId(request.TaskId);
-                if (taskHistory == null)
-                {
-                    response.Errors.Add("Task history not found");
-                    return response;
-                }
-
-                var result = new GetAllTaskHistoryByIdQueryResponse
-                {
-                    TaskHistory = taskHistory.Select(x => new TaskHistoryResponse
-                    {
-                        ChangeDate = x.ChangeDate,
-                        HistoryDescription = x.HistoryDescription,
-                        ProjectTaskId = x.ProjectTaskId,
-                        UserId = x.UserId,
-                        UserName = x.User.Name
-                    }).ToList()
-                };
-
-                response.Success(result);
+                response.Errors.Add("Task history not found");
                 return response;
             }
-            catch (Exception ex)
+
+            var result = new GetAllTaskHistoryByIdQueryResponse
             {
-                logger.LogError(ex, "Error while getting task history by id");
-                response.Errors.Add("Error while getting task history by id");
-                return response;
-            }
+                TaskHistory = taskHistory.Select(x => new TaskHistoryResponse
+                {
+                    ChangeDate = x.ChangeDate,
+                    HistoryDescription = x.HistoryDescription,
+                    ProjectTaskId = x.ProjectTaskId,
+                    UserId = x.UserId,
+                    UserName = x.User.Name
+                }).ToList()
+            };
+
+            response.Success(result);
+            return response;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error while getting task history by id");
+            response.Errors.Add("Error while getting task history by id");
+            return response;
         }
     }
 }
-

@@ -1,10 +1,10 @@
+using ProjectManager.Application;
 using ProjectManager.Infrastructure.SQLServer.DependencyInjection;
 using ProjectManager.MinimalApis;
-using System.Reflection;
-using ProjectManager.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.AddConsole();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -14,7 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("SqlServerConne
 
 builder.Services
     .AddSqlServerProjectManagerSetup(connectionString)
-    .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(ProjectManager.Application.BaseResponse<>).Assembly));
+    .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(BaseResponse<>).Assembly));
 
 var app = builder.Build();
 
@@ -33,4 +33,3 @@ app.UseHttpsRedirection();
 
 
 app.Run();
-

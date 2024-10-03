@@ -9,6 +9,4 @@ public enum EProjectTaskStatus
     ToTest,
     ToReview,
     Done
-
-
 }

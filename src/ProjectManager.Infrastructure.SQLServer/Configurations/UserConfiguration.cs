@@ -1,9 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProjectManager.Domain.Entities;
 using ProjectManager.Domain.Enums;
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ProjectManager.Infrastructure.SQLServer.Configurations;
 
@@ -20,11 +20,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasDefaultValue(false);
 
         builder.Property(u => u.Name)
-        .IsRequired()
+            .IsRequired()
             .HasMaxLength(100);
 
         builder.Property(u => u.Document)
-        .IsRequired()
+            .IsRequired()
             .HasMaxLength(20);
 
         var rolesComparer = new ValueComparer<List<EUserRole>>(
@@ -42,16 +42,16 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         // Relacionamento muitos-para-muitos com Project
         builder.HasMany(u => u.Projects)
-        .WithMany(p => p.Users)
+            .WithMany(p => p.Users)
             .UsingEntity<Dictionary<string, object>>(
-        "UserProject",
-        j => j.HasOne<Project>().WithMany().HasForeignKey("ProjectId").OnDelete(DeleteBehavior.Cascade),
-        j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade),
-        j =>
-        {
-            j.HasKey("UserId", "ProjectId");
-            j.ToTable("UserProjects");
-        });
+                "UserProject",
+                j => j.HasOne<Project>().WithMany().HasForeignKey("ProjectId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade),
+                j =>
+                {
+                    j.HasKey("UserId", "ProjectId");
+                    j.ToTable("UserProjects");
+                });
 
         // Relacionamento um-para-muitos com ProjectTaskComment (se necessário)
         builder.HasMany<ProjectTaskComment>()

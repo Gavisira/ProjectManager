@@ -1,54 +1,65 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using ProjectManager.Application.ProjectTask.Commands.DeleteTask;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
-namespace ProjectManager.UnitTests.ProjectTask.Commands.DeleteTask
+namespace ProjectManager.UnitTests.ProjectTask.Commands.DeleteTask;
+
+[TestClass]
+public class DeleteTaskCommandHandlerTests
 {
-    public class DeleteTaskCommandHandlerTests
+    private readonly Mock<ILogger<DeleteTaskCommandHandler>> mockLogger;
+    private readonly MockRepository mockRepository;
+    private readonly Mock<ITaskHistoryRepository> mockTaskHistoryRepository;
+
+    private readonly Mock<ITaskRepository> mockTaskRepository;
+
+    public DeleteTaskCommandHandlerTests()
     {
-        private MockRepository mockRepository;
+        mockRepository = new MockRepository(MockBehavior.Default);
 
-        private Mock<ITaskRepository> mockTaskRepository;
-        private Mock<ILogger<DeleteTaskCommandHandler>> mockLogger;
-        private Mock<ITaskHistoryRepository> mockTaskHistoryRepository;
+        mockTaskRepository = mockRepository.Create<ITaskRepository>();
+        mockLogger = mockRepository.Create<ILogger<DeleteTaskCommandHandler>>();
+        mockTaskHistoryRepository = mockRepository.Create<ITaskHistoryRepository>();
+    }
 
-        public DeleteTaskCommandHandlerTests()
-        {
-            this.mockRepository = new MockRepository(MockBehavior.Strict);
+    private DeleteTaskCommandHandler CreateDeleteTaskCommandHandler()
+    {
+        return new DeleteTaskCommandHandler(
+            mockTaskRepository.Object,
+            mockLogger.Object,
+            mockTaskHistoryRepository.Object);
+    }
 
-            this.mockTaskRepository = this.mockRepository.Create<ITaskRepository>();
-            this.mockLogger = this.mockRepository.Create<ILogger<DeleteTaskCommandHandler>>();
-            this.mockTaskHistoryRepository = this.mockRepository.Create<ITaskHistoryRepository>();
-        }
+    [Fact]
+    public async Task Test_Success_Scenario()
+    {
+        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
 
-        private DeleteTaskCommandHandler CreateDeleteTaskCommandHandler()
-        {
-            return new DeleteTaskCommandHandler(
-                this.mockTaskRepository.Object,
-                this.mockLogger.Object,
-                this.mockTaskHistoryRepository.Object);
-        }
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        var deleteTaskCommandHandler = CreateDeleteTaskCommandHandler();
+        var request = projectManagerFixture.Create<DeleteTaskCommand>();
+        CancellationToken cancellationToken = default;
 
-        [Fact]
-        public async Task Handle_StateUnderTest_ExpectedBehavior()
-        {
-            // Arrange
-            var deleteTaskCommandHandler = this.CreateDeleteTaskCommandHandler();
-            DeleteTaskCommand request = null;
-            CancellationToken cancellationToken = default(global::System.Threading.CancellationToken);
+        //setup mocks
+        mockTaskRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTask>());
+        mockTaskRepository.Setup(x => x.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
+        mockTaskHistoryRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTaskHistory>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskHistory>());
 
-            // Act
-            var result = await deleteTaskCommandHandler.Handle(
-                request,
-                cancellationToken);
+        // Act
+        var result = await deleteTaskCommandHandler.Handle(
+            request,
+            cancellationToken);
 
-            // Assert
-            Assert.True(false);
-            this.mockRepository.VerifyAll();
-        }
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Errors.Should().BeNullOrEmpty();
     }
 }

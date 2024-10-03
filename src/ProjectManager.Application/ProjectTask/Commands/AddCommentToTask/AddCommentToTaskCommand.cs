@@ -1,14 +1,10 @@
 ﻿using MediatR;
 
-namespace ProjectManager.Application.ProjectTask.Commands.AddCommentToTask
+namespace ProjectManager.Application.ProjectTask.Commands.AddCommentToTask;
+
+public class AddCommentToTaskCommand : IRequest<BaseResponse<bool>>
 {
-
-
-    public class AddCommentToTaskCommand : IRequest<BaseResponse<bool>>
-    {
-        public int TaskId { get; set; }
-        public string Comment { get; set; }
-        public int AssignedUserId { get; set; }
-
-    }
+    public int TaskId { get; set; }
+    public string Comment { get; set; }
+    public int AssignedUserId { get; set; }
 }

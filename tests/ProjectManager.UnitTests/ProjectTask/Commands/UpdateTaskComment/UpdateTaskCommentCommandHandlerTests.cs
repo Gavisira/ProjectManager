@@ -1,54 +1,64 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using ProjectManager.Application.ProjectTask.Commands.UpdateTaskComment;
+using ProjectManager.Domain.Entities;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
-namespace ProjectManager.UnitTests.ProjectTask.Commands.UpdateTaskComment
+namespace ProjectManager.UnitTests.ProjectTask.Commands.UpdateTaskComment;
+
+[TestClass]
+public class UpdateTaskCommentCommandHandlerTests
 {
-    public class UpdateTaskCommentCommandHandlerTests
+    private readonly Mock<ICommentTaskRepository> mockCommentTaskRepository;
+    private readonly Mock<ILogger<UpdateTaskCommentCommandHandler>> mockLogger;
+    private readonly MockRepository mockRepository;
+    private readonly Mock<ITaskHistoryRepository> mockTaskHistoryRepository;
+
+    public UpdateTaskCommentCommandHandlerTests()
     {
-        private MockRepository mockRepository;
+        mockRepository = new MockRepository(MockBehavior.Default);
 
-        private Mock<ICommentTaskRepository> mockCommentTaskRepository;
-        private Mock<ILogger<UpdateTaskCommentCommandHandler>> mockLogger;
-        private Mock<ITaskHistoryRepository> mockTaskHistoryRepository;
+        mockCommentTaskRepository = mockRepository.Create<ICommentTaskRepository>();
+        mockLogger = mockRepository.Create<ILogger<UpdateTaskCommentCommandHandler>>();
+        mockTaskHistoryRepository = mockRepository.Create<ITaskHistoryRepository>();
+    }
 
-        public UpdateTaskCommentCommandHandlerTests()
-        {
-            this.mockRepository = new MockRepository(MockBehavior.Strict);
+    private UpdateTaskCommentCommandHandler CreateUpdateTaskCommentCommandHandler()
+    {
+        return new UpdateTaskCommentCommandHandler(
+            mockCommentTaskRepository.Object,
+            mockLogger.Object,
+            mockTaskHistoryRepository.Object);
+    }
 
-            this.mockCommentTaskRepository = this.mockRepository.Create<ICommentTaskRepository>();
-            this.mockLogger = this.mockRepository.Create<ILogger<UpdateTaskCommentCommandHandler>>();
-            this.mockTaskHistoryRepository = this.mockRepository.Create<ITaskHistoryRepository>();
-        }
+    [Fact]
+    public async Task Test_Success_Scenario()
+    {
+        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
 
-        private UpdateTaskCommentCommandHandler CreateUpdateTaskCommentCommandHandler()
-        {
-            return new UpdateTaskCommentCommandHandler(
-                this.mockCommentTaskRepository.Object,
-                this.mockLogger.Object,
-                this.mockTaskHistoryRepository.Object);
-        }
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        var updateTaskCommentCommandHandler = CreateUpdateTaskCommentCommandHandler();
+        var request = projectManagerFixture.Create<UpdateTaskCommentCommand>();
+        CancellationToken cancellationToken = default;
 
-        [Fact]
-        public async Task Handle_StateUnderTest_ExpectedBehavior()
-        {
-            // Arrange
-            var updateTaskCommentCommandHandler = this.CreateUpdateTaskCommentCommandHandler();
-            UpdateTaskCommentCommand request = null;
-            CancellationToken cancellationToken = default(global::System.Threading.CancellationToken);
+        //setup mocks
+        mockCommentTaskRepository.Setup(x => x.UpdateAsync(It.IsAny<ProjectTaskComment>()))
+            .ReturnsAsync(projectManagerFixture.Create<ProjectTaskComment>());
+        mockTaskHistoryRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTaskHistory>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskHistory>());
 
-            // Act
-            var result = await updateTaskCommentCommandHandler.Handle(
-                request,
-                cancellationToken);
+        // Act
+        var result = await updateTaskCommentCommandHandler.Handle(
+            request,
+            cancellationToken);
 
-            // Assert
-            Assert.True(false);
-            this.mockRepository.VerifyAll();
-        }
+
+        // Assert
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Errors.Should().BeNullOrEmpty();
     }
 }

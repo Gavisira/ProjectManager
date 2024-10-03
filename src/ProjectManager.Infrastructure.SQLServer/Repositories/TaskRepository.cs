@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectManager.Domain.Entities;
-using ProjectManager.Infrastructure.SQLServer.Context;
+using ProjectManager.Infrastructure.SQLServer.Contexts;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
 
 namespace ProjectManager.Infrastructure.SQLServer.Repositories;
 
-public class TaskRepository(ProjectManagerDbContext context) : BaseRepository<ProjectTask>(context),ITaskRepository
+public class TaskRepository(ProjectManagerDbContext context) : BaseRepository<ProjectTask>(context), ITaskRepository
 {
     public new async Task<ProjectTask> UpdateAsync(ProjectTask entity)
     {
@@ -20,8 +20,10 @@ public class TaskRepository(ProjectManagerDbContext context) : BaseRepository<Pr
     {
         try
         {
-            var userProjects = _context.Users.Where(p => p.IsDeleted == false).Include(x => x.Projects).Where(p => p.IsDeleted == false).FirstOrDefault(x => x.Id == userId);
-            var projects = await _context.Projects.Where(p => p.IsDeleted == false).Include(p => p.Tasks).Where(p => p.IsDeleted == false).Where(p => userProjects.Projects.Contains(p))
+            var userProjects = _context.Users.Where(p => p.IsDeleted == false).Include(x => x.Projects)
+                .Where(p => p.IsDeleted == false).FirstOrDefault(x => x.Id == userId);
+            var projects = await _context.Projects.Where(p => p.IsDeleted == false).Include(p => p.Tasks)
+                .Where(p => p.IsDeleted == false).Where(p => userProjects.Projects.Contains(p))
                 .Select(p => p.Tasks.Where(p => p.IsDeleted == false)).ToListAsync();
             return projects.SelectMany(x => x);
         }

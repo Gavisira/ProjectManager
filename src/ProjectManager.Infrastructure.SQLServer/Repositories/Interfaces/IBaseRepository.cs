@@ -9,7 +9,4 @@ public interface IBaseRepository<T> where T : class
     public Task<bool> DeleteAsync(int id);
     public Task<T?> GetByIdAsNoTrackingAsync(int id);
     public Task<IEnumerable<T>> GetAllAsNoTrackingAsync();
-
-
-
 }

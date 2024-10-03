@@ -13,7 +13,6 @@ public class ProjectTask : BaseEntity
     public DateTime EndDate { get; set; }
 
 
-
     public int ProjectId { get; set; }
     public Project Project { get; set; }
     public IEnumerable<ProjectTaskComment> Comments { get; set; }

@@ -8,7 +8,6 @@ namespace ProjectManager.MinimalApis;
 
 public static class UsersEndpoints
 {
-
     public static WebApplication SetupUserEndpoints(this WebApplication app)
     {
         app.MapPost("/users", async ([FromServices] IUserRepository repository, User command) =>
@@ -17,11 +16,13 @@ public static class UsersEndpoints
             return Results.Ok(response);
         }).WithOpenApi().WithTags("Users");
 
-        app.MapPost("/users/{userId}/projects/{projectId}", async ([FromServices] IMediator mediator, int userId, int projectId) =>
-        {
-            var response = await mediator.Send(new AddUserToProjectCommand { UserId = userId, ProjectId = projectId });
-            return Results.Ok(response);
-        }).WithOpenApi().WithTags("Users");
+        app.MapPost("/users/{userId}/projects/{projectId}",
+            async ([FromServices] IMediator mediator, int userId, int projectId) =>
+            {
+                var response = await mediator.Send(new AddUserToProjectCommand
+                    { UserId = userId, ProjectId = projectId });
+                return Results.Ok(response);
+            }).WithOpenApi().WithTags("Users");
 
 
         return app;

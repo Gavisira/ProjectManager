@@ -1,6 +1,6 @@
 ﻿namespace ProjectManager.Domain.Entities;
 
-public class ProjectTaskComment: BaseEntity
+public class ProjectTaskComment : BaseEntity
 {
     public string Comment { get; set; }
     public DateTime CreatedDate { get; set; }

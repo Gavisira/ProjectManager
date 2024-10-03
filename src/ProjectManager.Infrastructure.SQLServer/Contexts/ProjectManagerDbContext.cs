@@ -1,9 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using Microsoft.EntityFrameworkCore;
 using ProjectManager.Domain.Entities;
-using System.Reflection;
-using System;
 
-namespace ProjectManager.Infrastructure.SQLServer.Context;
+namespace ProjectManager.Infrastructure.SQLServer.Contexts;
 
 public class ProjectManagerDbContext(DbContextOptions<ProjectManagerDbContext> options) : DbContext(options)
 {

@@ -1,9 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using ProjectManager.Application.Project.CreateProject;
-using ProjectManager.Application.Project.DeleteProject;
+using ProjectManager.Application.Project.Commands.CreateProject;
+using ProjectManager.Application.Project.Commands.DeleteProject;
+using ProjectManager.Application.Project.Commands.UpdateProject;
 using ProjectManager.Application.Project.Queries.GetAllProjectsFromUser;
-using ProjectManager.Application.Project.UpdateProject;
 
 namespace ProjectManager.MinimalApis;
 
@@ -31,15 +31,15 @@ public static class ProjectsEndpoints
             return Results.Ok(response);
         }).WithOpenApi().WithTags("Projects");
 
-        app.MapPut("/projects/{projectId}", async ([FromServices] IMediator mediator, int projectId, UpdateProjectCommand command) =>
-        {
-            command.ProjectId = projectId;
-            var response = await mediator.Send(command);
-            return Results.Ok(response);
-        }).WithOpenApi().WithTags("Projects");
+        app.MapPut("/projects/{projectId}",
+            async ([FromServices] IMediator mediator, int projectId, UpdateProjectCommand command) =>
+            {
+                command.ProjectId = projectId;
+                var response = await mediator.Send(command);
+                return Results.Ok(response);
+            }).WithOpenApi().WithTags("Projects");
 
 
         return app;
     }
-    
 }

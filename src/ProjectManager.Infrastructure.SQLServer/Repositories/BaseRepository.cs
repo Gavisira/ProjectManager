@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProjectManager.Domain;
-using ProjectManager.Infrastructure.SQLServer.Context;
+using ProjectManager.Infrastructure.SQLServer.Contexts;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
 
 namespace ProjectManager.Infrastructure.SQLServer.Repositories;
@@ -8,7 +8,6 @@ namespace ProjectManager.Infrastructure.SQLServer.Repositories;
 public class BaseRepository<T>(ProjectManagerDbContext context) : IBaseRepository<T>
     where T : BaseEntity, new()
 {
-
     public readonly ProjectManagerDbContext _context = context;
 
     public async Task<IEnumerable<T?>> GetAllAsync()
@@ -18,7 +17,7 @@ public class BaseRepository<T>(ProjectManagerDbContext context) : IBaseRepositor
 
     public async Task<T?> GetByIdAsync(int id)
     {
-        return await _context.Set<T>().Where(p=>p.IsDeleted==false).FirstOrDefaultAsync(p=>p.Id==id);
+        return await _context.Set<T>().Where(p => p.IsDeleted == false).FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<T> AddAsync(T entity)
@@ -54,10 +53,7 @@ public class BaseRepository<T>(ProjectManagerDbContext context) : IBaseRepositor
         try
         {
             var entity = await _context.Set<T>().FindAsync(id);
-            if (entity == null)
-            {
-                return false;
-            }
+            if (entity == null) return false;
 
             entity.IsDeleted = true;
 
@@ -71,7 +67,11 @@ public class BaseRepository<T>(ProjectManagerDbContext context) : IBaseRepositor
         }
     }
 
-    public async Task<T?> GetByIdAsNoTrackingAsync(int id) => await _context.Set<T>().Where(p => p.IsDeleted == false).AsNoTracking().FirstOrDefaultAsync(p => p.Id == id)??new T();
+    public async Task<T?> GetByIdAsNoTrackingAsync(int id)
+    {
+        return await _context.Set<T>().Where(p => p.IsDeleted == false).AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id) ?? new T();
+    }
 
     public async Task<IEnumerable<T>> GetAllAsNoTrackingAsync()
     {

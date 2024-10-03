@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProjectManager.Domain.Entities;
 
@@ -26,8 +25,8 @@ public class TaskConfiguration : IEntityTypeConfiguration<ProjectTask>
             .HasConversion<string>();
 
         builder.Property(t => t.Title)
-                    .IsRequired()
-                    .HasMaxLength(100);
+            .IsRequired()
+            .HasMaxLength(100);
 
         builder.Property(t => t.Description)
             .IsRequired()

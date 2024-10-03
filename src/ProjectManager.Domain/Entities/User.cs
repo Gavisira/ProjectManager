@@ -9,6 +9,5 @@ public class User : BaseEntity
     public List<EUserRole> Roles { get; set; }
 
 
-
     public IEnumerable<Project> Projects { get; set; }
 }

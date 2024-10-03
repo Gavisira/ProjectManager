@@ -1,51 +1,59 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoFixture;
+using AutoFixture.AutoMoq;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
-using ProjectManager.Application.Project.CreateProject;
+using ProjectManager.Application.Project.Commands.CreateProject;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
-using System;
-using System.Threading.Tasks;
-using Xunit;
 
-namespace ProjectManager.UnitTests.Project.Commands.CreateProject
+namespace ProjectManager.UnitTests.Project.Commands.CreateProject;
+
+[TestClass]
+public class CreateProjectCommandHandlerTests
 {
-    public class CreateProjectCommandHandlerTests
+    private readonly Mock<ILogger<CreateProjectCommandHandler>> mockLogger;
+
+    private readonly Mock<IProjectRepository> mockProjectRepository;
+    private readonly MockRepository mockRepository;
+
+    public CreateProjectCommandHandlerTests()
     {
-        private MockRepository mockRepository;
+        mockRepository = new MockRepository(MockBehavior.Default);
 
-        private Mock<IProjectRepository> mockProjectRepository;
-        private Mock<ILogger<CreateProjectCommandHandler>> mockLogger;
+        mockProjectRepository = mockRepository.Create<IProjectRepository>();
+        mockLogger = mockRepository.Create<ILogger<CreateProjectCommandHandler>>();
+    }
 
-        public CreateProjectCommandHandlerTests()
-        {
-            this.mockRepository = new MockRepository(MockBehavior.Strict);
+    private CreateProjectCommandHandler CreateCreateProjectCommandHandler()
+    {
+        return new CreateProjectCommandHandler(
+            mockProjectRepository.Object,
+            mockLogger.Object);
+    }
 
-            this.mockProjectRepository = this.mockRepository.Create<IProjectRepository>();
-            this.mockLogger = this.mockRepository.Create<ILogger<CreateProjectCommandHandler>>();
-        }
+    [Fact]
+    public async Task Test_Success_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        var createProjectCommandHandler = CreateCreateProjectCommandHandler();
+        var request = projectManagerFixture.Create<CreateProjectCommand>();
+        CancellationToken cancellationToken = default;
 
-        private CreateProjectCommandHandler CreateCreateProjectCommandHandler()
-        {
-            return new CreateProjectCommandHandler(
-                this.mockProjectRepository.Object,
-                this.mockLogger.Object);
-        }
+        //setup mocks
+        mockProjectRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.Project>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.Project>());
 
-        [Fact]
-        public async Task Handle_StateUnderTest_ExpectedBehavior()
-        {
-            // Arrange
-            var createProjectCommandHandler = this.CreateCreateProjectCommandHandler();
-            CreateProjectCommand request = null;
-            CancellationToken cancellationToken = default(global::System.Threading.CancellationToken);
+        // Act
+        var result = await createProjectCommandHandler.Handle(
+            request,
+            cancellationToken);
 
-            // Act
-            var result = await createProjectCommandHandler.Handle(
-                request,
-                cancellationToken);
+        // Assert with fluent assertions
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeTrue();
+        result.Errors.Should().BeNullOrEmpty();
 
-            // Assert
-            Assert.True(false);
-            this.mockRepository.VerifyAll();
-        }
+        mockRepository.VerifyAll();
     }
 }
