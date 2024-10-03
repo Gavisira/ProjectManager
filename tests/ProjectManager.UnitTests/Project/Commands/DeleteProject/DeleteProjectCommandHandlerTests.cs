@@ -34,23 +34,22 @@ public class DeleteProjectCommandHandlerTests
     [Fact]
     public async Task Test_Success_Scenario()
     {
-        //create tests using ProjectManagerFixture
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
         var deleteProjectCommandHandler = CreateDeleteProjectCommandHandler();
         var request = projectManagerFixture.Create<DeleteProjectCommand>();
         CancellationToken cancellationToken = default;
 
-        //setup mocks
+
         mockProjectRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.Project>());
         mockProjectRepository.Setup(x => x.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
 
-        // Act
+
         var result = await deleteProjectCommandHandler.Handle(
             request,
             cancellationToken);
 
-        // Assert with fluent assertions
+
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();

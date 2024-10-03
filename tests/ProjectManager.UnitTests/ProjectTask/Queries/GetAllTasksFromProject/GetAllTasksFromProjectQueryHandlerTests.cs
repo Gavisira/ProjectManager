@@ -34,23 +34,20 @@ public class GetAllTasksFromProjectQueryHandlerTests
     [Fact]
     public async Task Test_Success_Scenario()
     {
-        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
-
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
         var getAllTasksFromProjectQueryHandler = CreateGetAllTasksFromProjectQueryHandler();
         var request = projectManagerFixture.Create<GetAllTasksFromProjectQuery>();
         CancellationToken cancellationToken = default;
 
-        //setup mocks
+
         mockProjectRepository.Setup(x => x.GetByIdAsNoTrackingAsync(It.IsAny<int>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.Project>());
 
-        // Act
+
         var result = await getAllTasksFromProjectQueryHandler.Handle(
             request,
             cancellationToken);
 
-        // Assert
         result.Should().NotBeNull();
         result.Data.Tasks.Count().Should().Be(3);
         result.Errors.Should().BeNullOrEmpty();

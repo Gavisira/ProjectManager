@@ -37,27 +37,24 @@ public class DeleteTaskCommandHandlerTests
     [Fact]
     public async Task Test_Success_Scenario()
     {
-        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
-
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
         var deleteTaskCommandHandler = CreateDeleteTaskCommandHandler();
         var request = projectManagerFixture.Create<DeleteTaskCommand>();
         CancellationToken cancellationToken = default;
 
-        //setup mocks
+
         mockTaskRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTask>());
         mockTaskRepository.Setup(x => x.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
         mockTaskHistoryRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTaskHistory>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskHistory>());
 
-        // Act
+
         var result = await deleteTaskCommandHandler.Handle(
             request,
             cancellationToken);
 
 
-        // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();

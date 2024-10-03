@@ -37,24 +37,21 @@ public class AddCommentToTaskCommandHandlerTests
     [Fact]
     public async Task Test_Success_Scenario()
     {
-        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
-
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
         var addCommentToTaskCommandHandler = CreateAddCommentToTaskCommandHandler();
         var request = projectManagerFixture.Create<AddCommentToTaskCommand>();
         CancellationToken cancellationToken = default;
 
-        //setup mocks
+
         mockCommentTaskRepository.Setup(x => x.AddAsync(It.IsAny<ProjectTaskComment>()))
             .ReturnsAsync(projectManagerFixture.Create<ProjectTaskComment>());
 
-        // Act
+
         var result = await addCommentToTaskCommandHandler.Handle(
             request,
             cancellationToken);
 
 
-        // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();

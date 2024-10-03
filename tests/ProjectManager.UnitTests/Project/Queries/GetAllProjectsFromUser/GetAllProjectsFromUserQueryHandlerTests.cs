@@ -34,24 +34,21 @@ public class GetAllProjectsFromUserQueryHandlerTests
     [Fact]
     public async Task Test_Success_Scenario()
     {
-        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture no request
-
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
         var getAllProjectsFromUserQueryHandler = CreateGetAllProjectsFromUserQueryHandler();
 
         var request = projectManagerFixture.Create<GetAllProjectsFromUserQuery>();
         CancellationToken cancellationToken = default;
 
-        //setup mocks
+
         mockProjectRepository.Setup(x => x.GetAllProjectsFromUserAsync(It.IsAny<int>()))
             .ReturnsAsync(projectManagerFixture.CreateMany<Domain.Entities.Project>());
 
-        // Act
+
         var result = await getAllProjectsFromUserQueryHandler.Handle(
             request,
             cancellationToken);
 
-        // Assert
         result.Should().NotBeNull();
         result.Data.Projects.Count().Should().Be(3);
         result.Errors.Should().BeNullOrEmpty();

@@ -37,26 +37,23 @@ public class CreateTaskCommandHandlerTests
     [Fact]
     public async Task Test_Success_Scenario()
     {
-        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
-
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
         var createTaskCommandHandler = CreateCreateTaskCommandHandler();
         var request = projectManagerFixture.Create<CreateTaskCommand>();
         CancellationToken cancellationToken = default;
 
-        //setup mocks
+
         mockTaskRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTask>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTask>());
         mockTaskHistoryRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTaskHistory>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskHistory>());
 
-        // Act
+
         var result = await createTaskCommandHandler.Handle(
             request,
             cancellationToken);
 
 
-        // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();

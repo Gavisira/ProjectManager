@@ -34,24 +34,21 @@ public class GetAllTaskHistoryByIdQueryHandlerTests
     [Fact]
     public async Task Test_Success_Scenario()
     {
-        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
-
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
         var getAllTaskHistoryByIdQueryHandler = CreateGetAllTaskHistoryByIdQueryHandler();
         var request = projectManagerFixture.Create<GetAllTaskHistoryByIdQuery>();
         CancellationToken cancellationToken = default;
 
-        //setup mocks
+
         mockTaskHistoryRepository.Setup(x => x.GetAllTaskHistoryByTaskId(It.IsAny<int>()))
             .ReturnsAsync(projectManagerFixture.CreateMany<Domain.Entities.ProjectTaskHistory>().ToList());
 
-        // Act
+
         var result = await getAllTaskHistoryByIdQueryHandler.Handle(
             request,
             cancellationToken);
 
 
-        // Assert
         result.Should().NotBeNull();
         result.Data.TaskHistory.Count().Should().Be(3);
         result.Errors.Should().BeNullOrEmpty();

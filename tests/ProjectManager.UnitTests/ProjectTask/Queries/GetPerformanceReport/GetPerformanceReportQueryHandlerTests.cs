@@ -56,7 +56,7 @@ public class GetPerformanceReportQueryHandlerTests
         mockTaskRepository.Setup(x => x.GetAllTasksByUser(It.IsAny<int>()))
             .ReturnsAsync(fixture.CreateMany<Domain.Entities.ProjectTask>(3));
 
-        // Act
+
         var result = await getPerformanceReportQueryHandler.Handle(
             request,
             cancellationToken);

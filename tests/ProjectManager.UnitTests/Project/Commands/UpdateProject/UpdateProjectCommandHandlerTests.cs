@@ -34,24 +34,22 @@ public class UpdateProjectCommandHandlerTests
     [Fact]
     public async Task Test_Success_Scenario()
     {
-        //faça o setup seguindo o exemplo dos outros testes usando ProjectManagerFixture
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
         var updateProjectCommandHandler = CreateUpdateProjectCommandHandler();
         var request = projectManagerFixture.Create<UpdateProjectCommand>();
         CancellationToken cancellationToken = default;
 
-        //setup mocks
+
         mockProjectRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.Project>());
         mockProjectRepository.Setup(x => x.UpdateAsync(It.IsAny<Domain.Entities.Project>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.Project>());
 
-        // Act
+
         var result = await updateProjectCommandHandler.Handle(
             request,
             cancellationToken);
 
-        // Assert
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();
