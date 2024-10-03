@@ -43,7 +43,7 @@ namespace ProjectManager.Application.ProjectTask.Commands.DeleteTaskComment
                 _logger.LogInformation("Comment {commentId} deleted", request.TaskCommentId);
 
 
-                var taskHistory = new ProjectTaskHistory()
+                var taskHistory = new Domain.Entities.ProjectTaskHistory()
                 {
                     ProjectTaskId = comment.ProjectTaskId,
                     ChangeDate = DateTime.Now,

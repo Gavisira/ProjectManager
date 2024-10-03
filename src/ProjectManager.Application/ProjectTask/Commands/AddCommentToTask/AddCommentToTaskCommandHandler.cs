@@ -39,7 +39,7 @@ namespace ProjectManager.Application.ProjectTask.Commands.AddCommentToTask
                 var result = await _commentTaskRepository.AddAsync(comment);
                 response.Success(true);
                 _logger.LogInformation("Comment added to task {taskId}", request.TaskId);
-                var taskHistory = new ProjectTaskHistory()
+                var taskHistory = new Domain.Entities.ProjectTaskHistory()
                 {
                     ProjectTaskId = request.TaskId,
                     ChangeDate = DateTime.Now,

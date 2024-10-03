@@ -44,7 +44,7 @@ namespace ProjectManager.Application.ProjectTask.Commands.DeleteTask
 
 
 
-                var taskHistory = new ProjectTaskHistory()
+                var taskHistory = new Domain.Entities.ProjectTaskHistory()
                 {
                     ProjectTaskId = request.TaskId,
                     ChangeDate = DateTime.Now,

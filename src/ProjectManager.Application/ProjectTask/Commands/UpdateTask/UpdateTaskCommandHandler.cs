@@ -57,7 +57,7 @@ namespace ProjectManager.Application.ProjectTask.Commands.UpdateTask
                 response.Success(true);
                 _logger.LogInformation("Task {taskId} updated", request.TaskId);
 
-                var taskHistory = new ProjectTaskHistory()
+                var taskHistory = new Domain.Entities.ProjectTaskHistory()
                 {
                     ProjectTaskId = request.TaskId,
                     ChangeDate = DateTime.Now,

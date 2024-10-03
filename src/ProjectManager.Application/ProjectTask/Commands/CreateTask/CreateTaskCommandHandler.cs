@@ -41,7 +41,7 @@ namespace ProjectManager.Application.ProjectTask.Commands.CreateTask
                 _logger.LogInformation("Task {title} created in project {project}", request.Title, request.ProjectId);
 
 
-                var taskHistory = new ProjectTaskHistory()
+                var taskHistory = new Domain.Entities.ProjectTaskHistory()
                 {
                     ProjectTaskId = result.Id,
                     ChangeDate = DateTime.Now,

@@ -44,7 +44,7 @@ namespace ProjectManager.Application.ProjectTask.Commands.UpdateTaskComment
                 _logger.LogInformation("Comment {commentId} updated", request.TaskCommentId);
 
 
-                var taskHistory = new ProjectTaskHistory()
+                var taskHistory = new Domain.Entities.ProjectTaskHistory()
                 {
                     ProjectTaskId = comment.ProjectTaskId,
                     ChangeDate = DateTime.Now,
