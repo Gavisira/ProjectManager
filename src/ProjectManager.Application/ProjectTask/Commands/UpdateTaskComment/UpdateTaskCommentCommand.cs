@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectManager.Application.ProjectTask.Commands.UpdateTaskComment
 {
-    public class UpdateTaskCommentCommand : IRequest<BaseResponse<Unit>>
+    public class UpdateTaskCommentCommand : IRequest<BaseResponse<bool>>
     {
         public int TaskCommentId { get; set; }
         public string Comment { get; set; }

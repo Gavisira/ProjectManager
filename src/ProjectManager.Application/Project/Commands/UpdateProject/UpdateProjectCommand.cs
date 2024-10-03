@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectManager.Application.Project.UpdateProject
 {
-    public class UpdateProjectCommand : IRequest<BaseResponse<Unit>>
+    public class UpdateProjectCommand : IRequest<BaseResponse<bool>>
     {
         public int ProjectId { get; set; }
         public string Name { get; set; }

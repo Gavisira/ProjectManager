@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectManager.Application.ProjectTask.Commands.DeleteTask
 {
-    public class DeleteTaskCommand : IRequest<BaseResponse<Unit>>
+    public class DeleteTaskCommand : IRequest<BaseResponse<bool>>
     {
         public int TaskId { get; set; }
     }

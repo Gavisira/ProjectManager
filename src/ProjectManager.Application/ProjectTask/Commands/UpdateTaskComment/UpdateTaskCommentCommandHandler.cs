@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace ProjectManager.Application.ProjectTask.Commands.UpdateTaskComment
 {
-    public class UpdateTaskCommentCommandHandler : IRequestHandler<UpdateTaskCommentCommand, BaseResponse<Unit>>
+    public class UpdateTaskCommentCommandHandler : IRequestHandler<UpdateTaskCommentCommand, BaseResponse<bool>>
     {
         public UpdateTaskCommentCommandHandler()
         {
         }
 
-        public async Task<BaseResponse<Unit>> Handle(UpdateTaskCommentCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<bool>> Handle(UpdateTaskCommentCommand request, CancellationToken cancellationToken)
         {
 			throw new NotImplementedException();
         }

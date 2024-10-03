@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectManager.Domain\ProjectManager.Domain.csproj" />
+    <ProjectReference Include="..\ProjectManager.Infrastructure.SQLServer\ProjectManager.Infrastructure.SQLServer.csproj" />
   </ItemGroup>
 
 </Project>

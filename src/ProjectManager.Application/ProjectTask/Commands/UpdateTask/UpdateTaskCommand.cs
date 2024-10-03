@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ProjectManager.Application.ProjectTask.Commands.UpdateTask
 {
-    public class UpdateTaskCommand : IRequest<BaseResponse<Unit>>
+    public class UpdateTaskCommand : IRequest<BaseResponse<bool>>
     {
         public int? TaskId { get; set; }
         public string? Title { get; set; }

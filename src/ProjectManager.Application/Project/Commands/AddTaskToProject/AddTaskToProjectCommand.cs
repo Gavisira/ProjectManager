@@ -8,7 +8,7 @@ using ProjectManager.Domain.Enums;
 
 namespace ProjectManager.Application.Project.Commands.AddTaskToProject
 {
-    public class AddTaskToProjectCommand : IRequest<BaseResponse<Unit>>
+    public class AddTaskToProjectCommand : IRequest<BaseResponse<bool>>
     {
         public int ProjectId { get; set; }
         public string Title { get; set; }

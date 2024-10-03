@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace ProjectManager.Application.ProjectTask.Commands.DeleteTaskComment
 {
-    public class DeleteTaskCommentCommandHandler : IRequestHandler<DeleteTaskCommentCommand,BaseResponse<Unit>>
+    public class DeleteTaskCommentCommandHandler : IRequestHandler<DeleteTaskCommentCommand,BaseResponse<bool>>
     {
         public DeleteTaskCommentCommandHandler()
         {
         }
 
-        public async Task<BaseResponse<Unit>> Handle(DeleteTaskCommentCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<bool>> Handle(DeleteTaskCommentCommand request, CancellationToken cancellationToken)
         {
 			throw new NotImplementedException();
         }

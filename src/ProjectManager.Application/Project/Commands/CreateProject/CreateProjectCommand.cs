@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProjectManager.Application.Project.CreateProject
 {
-    public class CreateProjectCommand : IRequest<BaseResponse<Unit>>
+    public class CreateProjectCommand : IRequest<BaseResponse<bool>>
     {
         public string Name { get; set; }
         public string Description { get; set; }
