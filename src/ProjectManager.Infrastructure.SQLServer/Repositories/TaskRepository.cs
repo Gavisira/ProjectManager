@@ -15,4 +15,19 @@ public class TaskRepository(ProjectManagerDbContext context) : BaseRepository<Pr
         await _context.SaveChangesAsync();
         return entity;
     }
+
+    public async Task<IEnumerable<ProjectTask?>> GetAllTasksByUser(int userId)
+    {
+        try
+        {
+            var userProjects = _context.Users.Include(x => x.Projects).FirstOrDefault(x => x.Id == userId);
+            var projects = await _context.Projects.Include(p => p.Tasks).Where(p => userProjects.Projects.Contains(p))
+                .Select(p => p.Tasks).ToListAsync();
+            return projects.SelectMany(x => x);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
 }

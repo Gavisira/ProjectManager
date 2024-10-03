@@ -11,6 +11,11 @@ public class ProjectRepository(ProjectManagerDbContext context) : BaseRepository
     {
         return await _context.Projects.Include(x => x.Tasks).FirstOrDefaultAsync(x => x.Id == id);
     }
+
+    public new async Task<Project?> GetByIdAsNoTrackingAsync(int id)
+    {
+        return await _context.Projects.AsNoTracking().Include(x => x.Tasks).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+    }
     public new async Task<bool> DeleteAsync(int id)
     {
         var tasks = await _context.Set<ProjectTask>().Where(x => x.Project.Id == id).ToListAsync();
