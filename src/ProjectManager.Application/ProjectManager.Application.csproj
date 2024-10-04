@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectManager.Domain\ProjectManager.Domain.csproj" />
+    <ProjectReference
+      Include="..\ProjectManager.Infrastructure.SQLServer\ProjectManager.Infrastructure.SQLServer.csproj" />
+  </ItemGroup>
+
 </Project>
