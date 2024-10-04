@@ -4,9 +4,9 @@ using ProjectManager.Application.Project.Commands.CreateProject;
 using ProjectManager.Application.Project.Commands.DeleteProject;
 using ProjectManager.Application.Project.Commands.UpdateProject;
 using ProjectManager.Application.Project.Queries.GetAllProjectsFromUser;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProjectManager.MinimalApis;
-
 public static class ProjectsEndpoints
 {
     public static WebApplication SetupProjectsEndpoints(this WebApplication app)

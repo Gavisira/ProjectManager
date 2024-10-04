@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProjectManager.Domain.Entities;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProjectManager.Infrastructure.SQLServer.Configurations;
-
+[ExcludeFromCodeCoverage]
 public class ProjectTaskHistoryConfiguration : IEntityTypeConfiguration<ProjectTaskHistory>
 {
     public void Configure(EntityTypeBuilder<ProjectTaskHistory> builder)

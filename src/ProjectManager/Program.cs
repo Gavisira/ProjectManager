@@ -1,6 +1,7 @@
 using ProjectManager.Application;
 using ProjectManager.Infrastructure.SQLServer.DependencyInjection;
 using ProjectManager.MinimalApis;
+using System.Diagnostics.CodeAnalysis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,3 +34,6 @@ app.UseHttpsRedirection();
 
 
 app.Run();
+
+[ExcludeFromCodeCoverage]
+public partial class Program { }

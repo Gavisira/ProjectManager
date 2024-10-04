@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ProjectManager.Domain.Entities;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProjectManager.Infrastructure.SQLServer.Configurations;
-
+[ExcludeFromCodeCoverage]
 public class ProjectTaskCommentConfiguration : IEntityTypeConfiguration<ProjectTaskComment>
 {
     public void Configure(EntityTypeBuilder<ProjectTaskComment> builder)

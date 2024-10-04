@@ -35,6 +35,7 @@ public class GetAllTasksFromProjectQueryHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var getAllTasksFromProjectQueryHandler = CreateGetAllTasksFromProjectQueryHandler();
         var request = projectManagerFixture.Create<GetAllTasksFromProjectQuery>();
         CancellationToken cancellationToken = default;
@@ -51,5 +52,29 @@ public class GetAllTasksFromProjectQueryHandlerTests
         result.Should().NotBeNull();
         result.Data.Tasks.Count().Should().Be(3);
         result.Errors.Should().BeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task Test_Failure_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var getAllTasksFromProjectQueryHandler = CreateGetAllTasksFromProjectQueryHandler();
+        var request = projectManagerFixture.Create<GetAllTasksFromProjectQuery>();
+        CancellationToken cancellationToken = default;
+
+        mockProjectRepository.Setup(x => x.GetByIdAsNoTrackingAsync(It.IsAny<int>()))
+            .ReturnsAsync((Domain.Entities.Project)null);
+
+        var result = await getAllTasksFromProjectQueryHandler.Handle(
+            request,
+            cancellationToken);
+
+        result.Should().NotBeNull();
+        result.Data.Should().BeNull();
+        result.Errors.Should().NotBeNullOrEmpty();
+        result.IsSuccess.Should().BeFalse();
+
+
     }
 }

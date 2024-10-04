@@ -35,6 +35,7 @@ public class CreateProjectCommandHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var createProjectCommandHandler = CreateCreateProjectCommandHandler();
         var request = projectManagerFixture.Create<CreateProjectCommand>();
         CancellationToken cancellationToken = default;
@@ -55,4 +56,24 @@ public class CreateProjectCommandHandlerTests
 
         mockRepository.VerifyAll();
     }
+
+    [Fact]
+    public async Task Test_Exception_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var createProjectCommandHandler = CreateCreateProjectCommandHandler();
+        var request = projectManagerFixture.Create<CreateProjectCommand>();
+        CancellationToken cancellationToken = default;
+        mockProjectRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.Project>()))
+            .ThrowsAsync(new Exception("Error adding project"));
+        var result = await createProjectCommandHandler.Handle(
+            request,
+            cancellationToken);
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeNullOrEmpty();
+        mockRepository.VerifyAll();
+    }
+
 }

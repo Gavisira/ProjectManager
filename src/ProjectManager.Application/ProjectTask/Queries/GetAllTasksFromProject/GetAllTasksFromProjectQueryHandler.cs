@@ -16,8 +16,6 @@ public class GetAllTasksFromProjectQueryHandler(
         CancellationToken cancellationToken)
     {
         var response = new BaseResponse<GetAllTasksFromProjectQueryResponse>();
-        try
-        {
             var project = await _projectRepository.GetByIdAsNoTrackingAsync(request.ProjectId);
             if (project == null)
             {
@@ -36,13 +34,6 @@ public class GetAllTasksFromProjectQueryHandler(
                 EndDate = t.EndDate
             }).ToList();
             response.Success(new GetAllTasksFromProjectQueryResponse { Tasks = tasks });
-            return response;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while getting tasks from project");
-            response.Fail(new List<string> { "Error while getting tasks from project" });
-            return response;
+            return response; return response;
         }
     }
-}

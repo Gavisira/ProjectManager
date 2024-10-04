@@ -35,6 +35,7 @@ public class GetAllProjectsFromUserQueryHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var getAllProjectsFromUserQueryHandler = CreateGetAllProjectsFromUserQueryHandler();
 
         var request = projectManagerFixture.Create<GetAllProjectsFromUserQuery>();
@@ -53,4 +54,28 @@ public class GetAllProjectsFromUserQueryHandlerTests
         result.Data.Projects.Count().Should().Be(3);
         result.Errors.Should().BeNullOrEmpty();
     }
+
+    [Fact]
+    public async Task Test_Failure_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var getAllProjectsFromUserQueryHandler = CreateGetAllProjectsFromUserQueryHandler();
+        var request = projectManagerFixture.Create<GetAllProjectsFromUserQuery>();
+        CancellationToken cancellationToken = default;
+
+        mockProjectRepository.Setup(x => x.GetAllProjectsFromUserAsync(It.IsAny<int>()))
+            .ThrowsAsync(new Exception());
+
+        var result = await getAllProjectsFromUserQueryHandler.Handle(
+            request,
+            cancellationToken);
+
+        result.Should().NotBeNull();
+        result.Data.Should().BeNull();
+        result.Errors.Should().NotBeNullOrEmpty();
+        result.IsSuccess.Should().BeFalse();
+    }
+
+
 }

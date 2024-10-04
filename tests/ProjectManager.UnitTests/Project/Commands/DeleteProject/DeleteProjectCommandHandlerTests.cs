@@ -35,13 +35,17 @@ public class DeleteProjectCommandHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var deleteProjectCommandHandler = CreateDeleteProjectCommandHandler();
         var request = projectManagerFixture.Create<DeleteProjectCommand>();
         CancellationToken cancellationToken = default;
 
+        var projectReturn = projectManagerFixture.Create<Domain.Entities.Project>();
+        projectReturn.Tasks = new List<Domain.Entities.ProjectTask>();
+
 
         mockProjectRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
-            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.Project>());
+            .ReturnsAsync(projectReturn);
         mockProjectRepository.Setup(x => x.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
 
 
@@ -53,5 +57,29 @@ public class DeleteProjectCommandHandlerTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();
+    }
+
+
+    [Fact]
+    public async Task Test_Exception_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var deleteProjectCommandHandler = CreateDeleteProjectCommandHandler();
+        var request = projectManagerFixture.Create<DeleteProjectCommand>();
+        CancellationToken cancellationToken = default;
+        var projectReturn = projectManagerFixture.Create<Domain.Entities.Project>();
+        projectReturn.Tasks = new List<Domain.Entities.ProjectTask>();
+
+        mockProjectRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(projectReturn);
+        mockProjectRepository.Setup(x => x.DeleteAsync(It.IsAny<int>()))
+            .ThrowsAsync(new Exception("Error deleting project"));
+        var result = await deleteProjectCommandHandler.Handle(
+            request,
+            cancellationToken);
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeNullOrEmpty();
     }
 }

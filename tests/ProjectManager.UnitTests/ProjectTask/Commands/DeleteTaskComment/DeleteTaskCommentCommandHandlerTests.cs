@@ -37,6 +37,7 @@ public class DeleteTaskCommentCommandHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var deleteTaskCommentCommandHandler = CreateDeleteTaskCommentCommandHandler();
         var request = projectManagerFixture.Create<DeleteTaskCommentCommand>();
         CancellationToken cancellationToken = default;
@@ -45,6 +46,8 @@ public class DeleteTaskCommentCommandHandlerTests
         mockCommentTaskRepository.Setup(x => x.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
         mockTaskHistoryRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTaskHistory>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskHistory>());
+        mockCommentTaskRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskComment>());
 
 
         var result = await deleteTaskCommentCommandHandler.Handle(
@@ -55,5 +58,30 @@ public class DeleteTaskCommentCommandHandlerTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task Test_Exception_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var deleteTaskCommentCommandHandler = CreateDeleteTaskCommentCommandHandler();
+        var request = projectManagerFixture.Create<DeleteTaskCommentCommand>();
+        CancellationToken cancellationToken = default;
+
+        mockCommentTaskRepository.Setup(x => x.DeleteAsync(It.IsAny<int>())).Throws(new Exception("Error"));
+        mockTaskHistoryRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTaskHistory>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskHistory>());
+        mockCommentTaskRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskComment>());
+
+        var result = await deleteTaskCommentCommandHandler.Handle(
+            request,
+            cancellationToken);
+
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeNullOrEmpty();
+
     }
 }

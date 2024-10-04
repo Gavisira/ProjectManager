@@ -38,6 +38,7 @@ public class UpdateTaskCommentCommandHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var updateTaskCommentCommandHandler = CreateUpdateTaskCommentCommandHandler();
         var request = projectManagerFixture.Create<UpdateTaskCommentCommand>();
         CancellationToken cancellationToken = default;
@@ -47,6 +48,8 @@ public class UpdateTaskCommentCommandHandlerTests
             .ReturnsAsync(projectManagerFixture.Create<ProjectTaskComment>());
         mockTaskHistoryRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTaskHistory>()))
             .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskHistory>());
+        mockCommentTaskRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(projectManagerFixture.Create<ProjectTaskComment>());
 
 
         var result = await updateTaskCommentCommandHandler.Handle(
@@ -57,5 +60,26 @@ public class UpdateTaskCommentCommandHandlerTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task Test_Exception_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var updateTaskCommentCommandHandler = CreateUpdateTaskCommentCommandHandler();
+        var request = projectManagerFixture.Create<UpdateTaskCommentCommand>();
+        CancellationToken cancellationToken = default;
+
+        mockCommentTaskRepository.Setup(x => x.UpdateAsync(It.IsAny<ProjectTaskComment>()))
+            .Throws<Exception>();
+
+        var result = await updateTaskCommentCommandHandler.Handle(
+            request,
+            cancellationToken);
+
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeNullOrEmpty();
     }
 }

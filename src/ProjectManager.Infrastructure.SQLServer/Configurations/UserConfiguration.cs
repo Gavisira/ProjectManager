@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -6,7 +7,7 @@ using ProjectManager.Domain.Entities;
 using ProjectManager.Domain.Enums;
 
 namespace ProjectManager.Infrastructure.SQLServer.Configurations;
-
+[ExcludeFromCodeCoverage]
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)

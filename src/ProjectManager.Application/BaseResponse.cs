@@ -1,5 +1,7 @@
-﻿namespace ProjectManager.Application;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace ProjectManager.Application;
+[ExcludeFromCodeCoverage]
 public class BaseResponse<T>(List<string> errors = null, T data = default, bool isSuccess = true)
 {
     public List<string> Errors { get; set; } = errors;

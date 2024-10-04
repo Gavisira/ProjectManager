@@ -35,6 +35,7 @@ public class GetAllTaskHistoryByIdQueryHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var getAllTaskHistoryByIdQueryHandler = CreateGetAllTaskHistoryByIdQueryHandler();
         var request = projectManagerFixture.Create<GetAllTaskHistoryByIdQuery>();
         CancellationToken cancellationToken = default;
@@ -52,5 +53,27 @@ public class GetAllTaskHistoryByIdQueryHandlerTests
         result.Should().NotBeNull();
         result.Data.TaskHistory.Count().Should().Be(3);
         result.Errors.Should().BeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task Test_Failure_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var getAllTaskHistoryByIdQueryHandler = CreateGetAllTaskHistoryByIdQueryHandler();
+        var request = projectManagerFixture.Create<GetAllTaskHistoryByIdQuery>();
+        CancellationToken cancellationToken = default;
+
+        mockTaskHistoryRepository.Setup(x => x.GetAllTaskHistoryByTaskId(It.IsAny<int>()))
+            .ReturnsAsync((List<Domain.Entities.ProjectTaskHistory>)null);
+
+        var result = await getAllTaskHistoryByIdQueryHandler.Handle(
+            request,
+            cancellationToken);
+
+        result.Should().NotBeNull();
+        result.Data.Should().BeNull();
+        result.Errors.Should().NotBeNullOrEmpty();
+        result.IsSuccess.Should().BeFalse();
     }
 }

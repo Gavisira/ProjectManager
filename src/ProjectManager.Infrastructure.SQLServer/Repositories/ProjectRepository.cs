@@ -2,9 +2,10 @@
 using ProjectManager.Domain.Entities;
 using ProjectManager.Infrastructure.SQLServer.Contexts;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProjectManager.Infrastructure.SQLServer.Repositories;
-
+[ExcludeFromCodeCoverage]
 public class ProjectRepository(ProjectManagerDbContext context) : BaseRepository<Project>(context), IProjectRepository
 {
     public new async Task<Project?> GetByIdAsync(int id)

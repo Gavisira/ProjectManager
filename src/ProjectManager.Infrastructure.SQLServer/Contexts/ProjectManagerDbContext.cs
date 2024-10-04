@@ -1,9 +1,10 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using ProjectManager.Domain.Entities;
 
 namespace ProjectManager.Infrastructure.SQLServer.Contexts;
-
+[ExcludeFromCodeCoverage]
 public class ProjectManagerDbContext(DbContextOptions<ProjectManagerDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }

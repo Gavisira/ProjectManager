@@ -38,6 +38,7 @@ public class DeleteTaskCommandHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var deleteTaskCommandHandler = CreateDeleteTaskCommandHandler();
         var request = projectManagerFixture.Create<DeleteTaskCommand>();
         CancellationToken cancellationToken = default;
@@ -58,5 +59,29 @@ public class DeleteTaskCommandHandlerTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();
+    }
+
+
+    [Fact]
+    public async Task Test_Exception_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var deleteTaskCommandHandler = CreateDeleteTaskCommandHandler();
+        var request = projectManagerFixture.Create<DeleteTaskCommand>();
+        CancellationToken cancellationToken = default;
+        mockTaskRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTask>());
+        mockTaskRepository.Setup(x => x.DeleteAsync(It.IsAny<int>())).Throws(new Exception("Error"));
+        mockTaskHistoryRepository.Setup(x => x.AddAsync(It.IsAny<Domain.Entities.ProjectTaskHistory>()))
+            .ReturnsAsync(projectManagerFixture.Create<Domain.Entities.ProjectTaskHistory>());
+
+        var result = await deleteTaskCommandHandler.Handle(
+            request,
+            cancellationToken);
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeNullOrEmpty();
+
     }
 }

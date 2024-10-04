@@ -3,9 +3,10 @@ using Microsoft.Extensions.DependencyInjection;
 using ProjectManager.Infrastructure.SQLServer.Contexts;
 using ProjectManager.Infrastructure.SQLServer.Repositories;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProjectManager.Infrastructure.SQLServer.DependencyInjection;
-
+[ExcludeFromCodeCoverage]
 public static class AddSqlServerProjectManager
 {
     public static IServiceCollection AddSqlServerProjectManagerSetup(this IServiceCollection services,

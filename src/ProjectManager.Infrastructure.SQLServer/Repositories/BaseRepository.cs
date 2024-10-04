@@ -2,9 +2,10 @@
 using ProjectManager.Domain;
 using ProjectManager.Infrastructure.SQLServer.Contexts;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProjectManager.Infrastructure.SQLServer.Repositories;
-
+[ExcludeFromCodeCoverage]
 public class BaseRepository<T>(ProjectManagerDbContext context) : IBaseRepository<T>
     where T : BaseEntity, new()
 {

@@ -38,6 +38,7 @@ public class UpdateTaskCommandHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var updateTaskCommandHandler = CreateUpdateTaskCommandHandler();
         var request = projectManagerFixture.Create<UpdateTaskCommand>();
         CancellationToken cancellationToken = default;
@@ -58,5 +59,24 @@ public class UpdateTaskCommandHandlerTests
         result.Should().NotBeNull();
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();
+    }
+
+    [Fact]
+    public async Task Test_Exception_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var updateTaskCommandHandler = CreateUpdateTaskCommandHandler();
+        var request = projectManagerFixture.Create<UpdateTaskCommand>();
+        CancellationToken cancellationToken = default;
+
+        mockTaskRepository.Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+            .Throws(new Exception("Error"));
+        var result = await updateTaskCommandHandler.Handle(
+            request,
+            cancellationToken);
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeNullOrEmpty();
     }
 }

@@ -8,9 +8,9 @@ using ProjectManager.Application.ProjectTask.Commands.DeleteTaskComment;
 using ProjectManager.Application.ProjectTask.Queries.GetAllTasksFromProject;
 using ProjectManager.Application.ProjectTask.Queries.GetPerformanceReport;
 using ProjectManager.Application.ProjectTaskHistory.Queries.GetAllTaskHistoryById;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProjectManager.MinimalApis;
-
 public static class TasksEndpoints
 {
     public static WebApplication SetupTasksEndpoints(this WebApplication app)

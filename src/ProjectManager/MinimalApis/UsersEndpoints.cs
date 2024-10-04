@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProjectManager.Application.Project.Commands.AddUserToProject;
 using ProjectManager.Domain.Entities;
 using ProjectManager.Infrastructure.SQLServer.Repositories.Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ProjectManager.MinimalApis;
 

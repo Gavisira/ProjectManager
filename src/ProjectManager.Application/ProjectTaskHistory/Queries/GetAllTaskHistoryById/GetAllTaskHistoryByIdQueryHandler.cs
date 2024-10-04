@@ -15,35 +15,27 @@ public class GetAllTaskHistoryByIdQueryHandler(
     {
         var response = new BaseResponse<GetAllTaskHistoryByIdQueryResponse>();
 
-        try
+        var taskHistory = await taskHistoryRepository.GetAllTaskHistoryByTaskId(request.TaskId);
+        if (taskHistory == null || taskHistory.Count == 0)
         {
-            var taskHistory = await taskHistoryRepository.GetAllTaskHistoryByTaskId(request.TaskId);
-            if (taskHistory == null)
-            {
-                response.Errors.Add("Task history not found");
-                return response;
-            }
-
-            var result = new GetAllTaskHistoryByIdQueryResponse
-            {
-                TaskHistory = taskHistory.Select(x => new TaskHistoryResponse
-                {
-                    ChangeDate = x.ChangeDate,
-                    HistoryDescription = x.HistoryDescription,
-                    ProjectTaskId = x.ProjectTaskId,
-                    UserId = x.UserId,
-                    UserName = x.User.Name
-                }).ToList()
-            };
-
-            response.Success(result);
+            response.AddError("Task history not found");
             return response;
         }
-        catch (Exception ex)
+
+        var result = new GetAllTaskHistoryByIdQueryResponse
         {
-            logger.LogError(ex, "Error while getting task history by id");
-            response.Errors.Add("Error while getting task history by id");
-            return response;
-        }
+            TaskHistory = taskHistory.Select(x => new TaskHistoryResponse
+            {
+                ChangeDate = x.ChangeDate,
+                HistoryDescription = x.HistoryDescription,
+                ProjectTaskId = x.ProjectTaskId,
+                UserId = x.UserId,
+                UserName = x.User.Name
+            }).ToList()
+        };
+
+        response.Success(result);
+        return response;
+
     }
 }

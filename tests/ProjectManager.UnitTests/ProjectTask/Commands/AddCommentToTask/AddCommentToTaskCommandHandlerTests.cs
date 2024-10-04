@@ -38,6 +38,7 @@ public class AddCommentToTaskCommandHandlerTests
     public async Task Test_Success_Scenario()
     {
         var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
         var addCommentToTaskCommandHandler = CreateAddCommentToTaskCommandHandler();
         var request = projectManagerFixture.Create<AddCommentToTaskCommand>();
         CancellationToken cancellationToken = default;
@@ -56,4 +57,25 @@ public class AddCommentToTaskCommandHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Errors.Should().BeNullOrEmpty();
     }
+
+
+    [Fact]
+    public async Task Test_Exception_Scenario()
+    {
+        var projectManagerFixture = new Fixture().Customize(new AutoMoqCustomization());
+        projectManagerFixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        var addCommentToTaskCommandHandler = CreateAddCommentToTaskCommandHandler();
+        var request = projectManagerFixture.Create<AddCommentToTaskCommand>();
+        CancellationToken cancellationToken = default;
+        mockCommentTaskRepository.Setup(x => x.AddAsync(It.IsAny<ProjectTaskComment>()))
+            .ThrowsAsync(new Exception("An error occurred"));
+        var result = await addCommentToTaskCommandHandler.Handle(
+            request,
+            cancellationToken);
+        result.Should().NotBeNull();
+        result.IsSuccess.Should().BeFalse();
+        result.Errors.Should().NotBeNullOrEmpty();
+    }
+
+
 }
